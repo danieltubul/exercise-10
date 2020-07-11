@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from "axios";
 import './Styles/App.css';
 
 import {
@@ -11,54 +12,61 @@ import Header from "./Components/Header";
 import AboutMe from "./Pages/AboutMe";
 import ContactMe from "./Pages/ContactMe";
 import HomePage from "./Pages/HomePage";
-import AddNewPost from "./Pages/NewPost";
+import Manage from "./Pages/Manage";
 import PostPage from "./Pages/PostPage";
 import LoginPage from "./Pages/LoginPage";
 import RegisterPage from "./Pages/RegisterPage"
+import AddPost from "./Pages/AddPost";
+import EditPosts from "./Pages/EditPosts"
+import Edit from "./Components/Edit";
 
 class App extends React.Component {
     constructor(props){
         super(props)
         this.state ={
-            isLoggedIn: false,
-            firstname: '',
-            user_id: '',
+            user: null,
+
         }
     }
 
-    setLoginToTrue = (e) => {
+    setUser = (data) => {
         this.setState({
-            isLoggedIn: true
+            user: data
         })
     }
 
     setLoginToFalse =(e) =>{
         this.setState({
-            isLoggedIn: false
+            user: null
         })
     }
 
+    componentDidMount() {
+        axios.get('/user')
+            .then((res) => {
+            this.setUser(res.data)
+            })
+            .catch((err) => {
 
-    setNameAndId = (data) => {
-        this.setState({
-            firstname: data.first_name,
-            user_id: data.user_id,
-        })
+            });
+        }
 
-    }
 
     render (){
         return (
             <div className="app-header">
                 <Router>
-                    <Header isLoggedIn={this.state.isLoggedIn} firstname={this.state.firstname} user_id={this.state.user_id} onLogout={this.setLoginToFalse}/>
+                    <Header user={this.state.user}  onLogout={this.setLoginToFalse}/>
                     <Switch>
                         <Route path ="/register" component={RegisterPage}/>
-                        <Route path="/login" component={() => <LoginPage onLoginSuccess={this.setLoginToTrue} changeNameAndIdOnLoginSuccess={this.setNameAndId} />}/>
-                        <Route path='/post/:id' component = {PostPage}/>}/>
+                        <Route path="/login" component={(props) => <LoginPage onLoginSuccess={this.setUser} {...props} />}/>
+                        <Route exact path="/post/:id" render={(props) => <PostPage {...props} user={this.state.user} />} />
                         <Route path="/about" component={AboutMe}/>
                         <Route path="/contact" component={ContactMe}/>
-                        <Route path="/add-post" component={AddNewPost}/>
+                        <Route path="/manage" render={(props) => <Manage {...props} user={this.state.user}/>}/>
+                        <Route path="/edit/:id" render={(props) => <Edit {...props} user={this.state.user} />}/>
+                        <Route path="/add-post" render={(props) => <AddPost {...props} user={this.state.user} />}/>
+                        <Route user={this.state.user} path="/edit-posts" component={EditPosts}/>
                         <Route path="/" component={HomePage}/>
                     </Switch>
                 </Router>

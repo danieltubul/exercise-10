@@ -27,7 +27,7 @@ class LoginPage extends React.Component{
         })
     }
 
-    doLogin = (e) => {
+    doLogin = () => {
         const url = "/login";
         const data = {
             username: this.state.username,
@@ -40,8 +40,9 @@ class LoginPage extends React.Component{
                     password: '',
                     resp: "Success: user logged in.",
                 });
-                this.props.onLoginSuccess()
-                this.props.changeNameAndIdOnLoginSuccess(res.data)
+                // console.log("res from login", res)
+                this.props.onLoginSuccess(res.data)
+                this.props.history.push('/')
 
             })
             .catch((err) => {
@@ -51,13 +52,20 @@ class LoginPage extends React.Component{
             });
     }
 
+    onEnter = (e) => {
+        if (e.key == 'Enter' && this.state.username && this.state.password) {
+            this.doLogin()
+        }
+    }
+
+
     render() {
         return (
             <div>
                 <br/><br/><br/><br/>
                 <div align="center">
-                    Username: <input type="text" value={this.state.username} onChange={this.handleUsernameChange}></input><br/>
-                    Password: <input type="password" value={this.state.password} onChange={this.handlePasswordChange}></input><br/>
+                    Username: <input type="text" onKeyDown={this.onEnter} value={this.state.username} onChange={this.handleUsernameChange}></input><br/>
+                    Password: <input type="password" onKeyDown={this.onEnter} value={this.state.password} onChange={this.handlePasswordChange}></input><br/>
                     <button onClick={this.doLogin}>Login</button><br/><br/>
                     <Link to="/register">I don't have an account</Link>
                 </div>

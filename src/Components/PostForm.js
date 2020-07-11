@@ -1,15 +1,15 @@
 import React from 'react';
 import axios from 'axios';
+import Edit from '../Components/Edit'
 
-
-class NewPost extends React.Component {
+class PostForm extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            title: undefined,
-            content: undefined,
-            author: undefined,
+            title: props.title || undefined,
+            content: props.content || undefined,
+            author: props.author || undefined,
         };
     }
 
@@ -29,26 +29,13 @@ class NewPost extends React.Component {
         })
     }
 
-    handleSubmit = (e) => {
-        e.preventDefault();
-        const data = {
-            title: this.state.title,
-            content: this.state.content,
-            author: this.state.author,
-        }
-
-        axios.post('/posts', data).then(res => {
-            const post = res.data;
-            this.setState({title: '',
-                                 content: '',
-                                 author:''});
-        })
+    handleSubmit = () => {
+        this.props.handleSubmit(this.state)
     }
 
     render() {
         return (
             <div>
-                <h1>Create new post</h1>
                 <p>
                     <br/>
                     <input type="text" value={this.state.title} placeholder="Post title goes here..." size="54"
@@ -56,14 +43,14 @@ class NewPost extends React.Component {
                     <br/><br/>
                     <textarea rows="8" cols="50" value={this.state.content} placeholder="Post content goes here..." onChange={this.handleContentChange}></textarea>
                     <br/><br/>
-                    <input type="text" value={this.state.author} placeholder="Author" size="54" onChange={this.handleAuthorChange}></input>
-                <br/><br/>
-                    <input type="submit" value="Save post" onClick={this.handleSubmit}></input>
+                    <input type="text" value={this.props.author} size="54" readOnly={this.props.author}></input>
+                    <br/><br/>
                 </p>
+                <button onClick={this.handleSubmit}>{this.props.buttonText}</button>
             </div>
         );
 
     }
 }
 
-export default NewPost;
+export default PostForm;

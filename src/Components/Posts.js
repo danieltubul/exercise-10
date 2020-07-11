@@ -26,7 +26,7 @@ class Posts extends React.Component {
                 title={post.title}
                 content={post.content}
                 image={post.image}
-                published={post.published}
+                published={post.published_at}
                 author={post.author}
                 id={post.id}
             />
@@ -47,7 +47,7 @@ class Posts extends React.Component {
             </p>
             <img width="90" height="90" className="post-image" src="https://danieltbucket1.s3.amazonaws.com/xpic.png"/>
         <label className="post-footer">
-                Published {props.published} by {props.author}
+                Published at {props.published} by {props.author}
             </label>
         </div>
         </div>
