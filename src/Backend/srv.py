@@ -33,10 +33,6 @@ def teardown_request(exception):
 def alive():
     return "alive"
 
-@app.route('/')
-def index():
-    return app.send_static_file('index.html')
-
 @app.route('/login', methods=['POST', 'GET'])
 def login():
 	data = request.get_json()
