@@ -5,21 +5,18 @@ import uuid
 import bcrypt
 
 pool = mysql.connector.pooling.MySQLConnectionPool(
-    host = "blog-db-rds.cmvolhiqejy7.us-east-1.rds.amazonaws.com", #localhost
-    user = "admin", #root
-    passwd = "dbpwddbpwd", #dbpwd
+    host = "localhost", #"blog-db-rds.cmvolhiqejy7.us-east-1.rds.amazonaws.com", #localhost
+    user = "root", #admin
+    passwd = "dbpwd", #dbpwddbpwd
     database = "blog_db",
 	buffered = True,
-	pool_size = 10
+	pool_size = 10,
+	pool_name = "my_pool"
 )
 
 app = Flask(__name__,
             static_folder='../Frontend/build',
             static_url_path='/')
-
-@app.route('/')
-def index():
-    return app.send_static_file('index.html')
 
 @app.before_request
 def before_request():
@@ -32,6 +29,10 @@ def teardown_request(exception):
 @app.route("/api/alive")
 def alive():
     return "alive"
+
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -83,7 +84,6 @@ def user():
     header = ['user_id', 'first_name', 'email', 'role']
     data = dict(zip(header,records[0]))
     user_data = json.dumps(data, default=str)
-    print(user_data)
     return user_data
 
 
@@ -118,8 +118,11 @@ def manage_posts_requests():
 
 def add_post():
 	data = request.get_json()
+	user_data = user()
+	json_user_data = json.loads(user_data)
+	author = json_user_data['first_name']
 	query = "insert into posts (title, content, author) values (%s, %s, %s)"
-	values = (data['title'], data['content'], data['author'])
+	values = (data['title'], data['content'], author)
 	cursor = g.db.cursor()
 	cursor.execute(query, values)
 	g.db.commit()
@@ -141,7 +144,14 @@ def get_all_posts():
 	return json.dumps(data, default=str)
      
 
-@app.route('/posts/<id>')
+@app.route('/posts/<id>', methods=['GET','PUT','DELETE'])
+def manage_posts_by_ID_requests(id):
+    if request.method == 'GET':
+        return get_post_and_comments_by_ID(id)
+    elif request.method == 'PUT':
+        return edit_post(id)
+    elif request.method == 'DELETE':
+        return delete_post(id)
 
 def get_post_and_comments_by_ID(id):
     query = "select id, title, content, author, published_at from posts where id=%s"
@@ -164,8 +174,30 @@ def get_post_and_comments_by_ID(id):
     post_json["comments"] = comments
     post_json = json.dumps(post_json, default=str)
     
-    
     return post_json
+
+def edit_post(id):
+    data = request.get_json()
+    query = "update posts set title=%s, content=%s where id=%s"
+    values = (data['title'], data['content'], id)
+    cursor = g.db.cursor()
+    cursor.execute(query, values)
+    g.db.commit()
+    cursor.close()
+    return 'updated'
+
+def delete_post(id):
+	#data = request.get_json()
+	print("hello")
+	query = "delete from posts where id=%s"
+	values = (id,)
+	cursor = g.db.cursor()
+	cursor.execute(query,values)
+	g.db.commit()
+	cursor.close()
+	data = get_all_posts()
+	return data
+
     
 
 @app.route('/comments', methods=['POST'])
@@ -187,36 +219,6 @@ def add_comment():
     comment = dict(zip(header,records[0]))
     comment_json = json.dumps(comment, default=str)
     return comment_json
-
-@app.route('/delete', methods=['POST'])
-
-def delete_post():
-	data = request.get_json()
-	print(data)
-	query = "delete from posts where id=%s"
-	values = (data['id'],)
-	cursor = g.db.cursor()
-	cursor.execute(query,values)
-	g.db.commit()
-	cursor.close()
-	data = get_all_posts()
-	return data
-
-
-@app.route('/edit', methods=['POST'])
-
-def edit_post():
-    data = request.get_json()
-    query = "update posts set title=%s, content=%s, author=%s where id=%s"
-    values = (data['title'], data['content'], data['author'], data['id'])
-    cursor = g.db.cursor()
-    cursor.execute(query, values)
-    g.db.commit()
-    cursor.close()
-    return 'updated'
-	
-
-
 
 if __name__ == "__main__":
 	app.run()

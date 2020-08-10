@@ -66,7 +66,7 @@ class App extends React.Component {
                         <Route path="/manage" render={(props) => <Manage {...props} user={this.state.user}/>}/>
                         <Route path="/edit/:id" render={(props) => <Edit {...props} user={this.state.user} />}/>
                         <Route path="/add-post" render={(props) => <AddPost {...props} user={this.state.user} />}/>
-                        <Route user={this.state.user} path="/edit-posts" component={EditPosts}/>
+                        <Route path="/edit-posts" render={(props) => <EditPosts {...props} user={this.state.user}/>}/>
                         <Route path="/" component={HomePage}/>
                     </Switch>
                 </Router>

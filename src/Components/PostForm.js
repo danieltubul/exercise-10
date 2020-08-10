@@ -23,11 +23,6 @@ class PostForm extends React.Component {
             content: e.target.value,
         })
     }
-    handleAuthorChange = (e) => {
-        this.setState({
-            author: e.target.value,
-        })
-    }
 
     handleSubmit = () => {
         this.props.handleSubmit(this.state)
@@ -41,7 +36,7 @@ class PostForm extends React.Component {
                     <input type="text" value={this.state.title} placeholder="Post title goes here..." size="54"
                            onChange={this.handleTitleChange}></input>
                     <br/><br/>
-                    <textarea rows="8" cols="50" value={this.state.content} placeholder="Post content goes here..." onChange={this.handleContentChange}></textarea>
+                    <textarea rows="8" cols="50" maxLength="8000" value={this.state.content} multiline={true} placeholder="Post content goes here..." onChange={this.handleContentChange}></textarea>
                     <br/><br/>
                     <input type="text" value={this.props.author} size="54" readOnly={this.props.author}></input>
                     <br/><br/>

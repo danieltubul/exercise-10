@@ -3,6 +3,7 @@ import "../Styles/post.css";
 import {Link} from 'react-router-dom';
 import axios from "axios";
 
+
 class Posts extends React.Component {
     constructor(props) {
         super(props)
@@ -14,9 +15,10 @@ class Posts extends React.Component {
     componentDidMount() {
         axios.get('/posts').then(res => {
             this.setState({
-                posts: res.data,
+                posts: res.data.reverse(),
             });
         })
+
     }
 
 
@@ -32,7 +34,6 @@ class Posts extends React.Component {
             />
         })
     }
-
 }
 
  function Post(props) {
@@ -42,8 +43,8 @@ class Posts extends React.Component {
             <label className="post-title">
                 <Link to={`/post/${props.id}`} className="post-title"> {props.title} </Link>
             </label>
-            <p className="post-content">
-                {props.content}
+            <p style={{ whiteSpace: 'pre-wrap' }}  className="post-content">
+                {props.content.length < 255? props.content : props.content.substring(0,255) + "..."}
             </p>
             <img width="90" height="90" className="post-image" src="https://danieltbucket1.s3.amazonaws.com/xpic.png"/>
         <label className="post-footer">

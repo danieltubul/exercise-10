@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
-import {Link} from "react-router-dom";
+import  { Redirect } from 'react-router-dom'
+
 
 
 
@@ -25,7 +26,7 @@ class EditPosts extends React.Component {
     deletePost = (id) => {
         console.log(id)
         if(window.confirm("Are you sure you?")){
-            axios.post('/delete', id ={id}).then(res => {
+            axios.delete(`/posts/${id}`).then(res => {
                 const data = res.data;
                 this.setState({
                     posts: data,
@@ -43,10 +44,10 @@ class EditPosts extends React.Component {
     }
 
     render() {
-        // if (this.state.posts.length == 0) return null
-        return (<div>
+        if(!(this.props.user && this.props.user.role == 'ADMIN'))
+            return <Redirect to='/login'  />
+        else return (<div>
             <ul>
-
             {this.state.posts.map(post => <li>
                 {post.title}
                 <button onClick={() => this.deletePost(post.id)}>delete</button>

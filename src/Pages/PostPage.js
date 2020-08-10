@@ -63,7 +63,7 @@ class PostPage extends React.Component {
         return (
             <div>
                 <h1>{this.state.post.title}</h1>
-                <p>{this.state.post.content}</p>
+                <p style={{ whiteSpace: 'pre-wrap' }}>{this.state.post.content}</p>
                 <p>
                     I want to show comments here: <br/><br/>
                    {this.state.comments.map(function (comment){

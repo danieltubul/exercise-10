@@ -17,7 +17,9 @@ class AddPost extends React.Component {
         return (
             <div>
                 <h1>Create new post</h1>
-                    <PostForm handleSubmit={this.handleSubmit} buttonText={"Create Post"} author={this.props.user.first_name}/>
+                    <PostForm handleSubmit={this.handleSubmit}
+                              buttonText={"Create Post"}
+                              author={this.props.user.first_name}/>
             </div>
         );
 

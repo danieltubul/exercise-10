@@ -30,9 +30,9 @@ class Edit extends React.Component {
     }
 
     handleSubmit = (data) => { // create new endpoint
-        data['id'] = this.state.post_id
+        const id = this.state.post_id
         console.log(data)
-        axios.post('/edit', data).then(res => {
+        axios.put(`/posts/${id}`, data).then(res => {
             this.props.history.push('/')
 
         })
@@ -43,7 +43,11 @@ class Edit extends React.Component {
         return (
             <div>
                 <h1>Edit post</h1>
-                <PostForm  handleSubmit={this.handleSubmit} title={this.state.post.title} content={this.state.post.content} author={this.state.post.author} buttonText={"Edit"}/>
+                <PostForm  handleSubmit={this.handleSubmit}
+                           title={this.state.post.title}
+                           content={this.state.post.content}
+                           author={this.state.post.author}
+                           buttonText={"Edit"}/>
             </div>
         )
     }
